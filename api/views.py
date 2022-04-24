@@ -134,7 +134,13 @@ class ContainerCreateAPIView(CreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
     serializer_class = ContainerSerializer
     queryset = Container.objects.all()
-    print("SUKA")
+
+
+class ContainerUpdateAPIView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsContainerOwner]
+    serializer_class = ContainerSerializer
+    queryset = Container.objects.all()
+    lookup_field = 'pk'
 
 
 class ContainerDeleteAPIView(DestroyAPIView):

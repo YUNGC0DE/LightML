@@ -14,5 +14,6 @@ urlpatterns = [
     path('projects/<int:pk>/delete/', ProjectDeleteAPIView.as_view()),
     path('containers/', ContainerAPIView.as_view()),
     path('containers/create/', ContainerCreateAPIView.as_view()),
+    path('containers/<int:pk>/update/', ContainerUpdateAPIView.as_view()),
     path('containers/<int:pk>/delete/', ContainerDeleteAPIView.as_view()),
 ]
