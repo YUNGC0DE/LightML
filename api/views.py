@@ -27,6 +27,9 @@ class IsProjectOwner(permissions.BasePermission):
 
     def has_permission(self, request, view):
         account = Account.objects.get(user=request.user)
+        project = get_object_or_none(Project, pk=view.kwargs['pk'])
+        if project is None:
+            return False
         return account == Project.objects.get(pk=view.kwargs['pk']).account
 
 
