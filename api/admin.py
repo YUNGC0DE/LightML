@@ -4,3 +4,4 @@ from .models import *
 admin.site.register(Account)
 admin.site.register(Project)
 admin.site.register(ModelInference)
+admin.site.register(Container)

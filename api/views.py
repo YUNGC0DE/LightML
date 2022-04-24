@@ -11,13 +11,26 @@ def get_object_or_none(klass, *args, **kwargs):
     except queryset.model.DoesNotExist:
         return None
 
+
 # ---------- custom permissions --------- #
+
+class IsContainerOwner(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        container = get_object_or_none(Container, pk=view.kwargs['pk'])
+        if container is None:
+            return False
+        user = container.project.account.user
+        return user == request.user
 
 
 class IsProjectOwner(permissions.BasePermission):
 
     def has_permission(self, request, view):
         account = Account.objects.get(user=request.user)
+        if request.data.get("project") is not None:
+            return account == Project.objects.get(pk=request.data['project']).account
+
         project = get_object_or_none(Project, pk=view.kwargs['pk'])
         if project is None:
             return False
@@ -25,9 +38,12 @@ class IsProjectOwner(permissions.BasePermission):
 
 
 class IsAccountOwner(permissions.BasePermission):
-    # ## # # #
+
     def has_permission(self, request, view):
         account = Account.objects.get(user=request.user)
+        pk = view.kwargs.get("pk")
+        if pk is not None:
+            return account.id == int(pk)
         return account.id == int(request.data["account"])
 
 
@@ -54,6 +70,14 @@ class AccountCreateAPIView(CreateAPIView):
     queryset = Account.objects.all()
 
 
+class AccountUpdateAPIView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsAccountOwner]
+
+    serializer_class = AccountSerializer
+    queryset = Account.objects.all()
+    lookup_field = 'pk'
+
+
 #  -------------- project --------------- #
 
 
@@ -73,23 +97,49 @@ class ProjectCreateAPIView(CreateAPIView):
 
 
 class ProjectAPIView(RetrieveAPIView):
-    permission_classes = [IsProjectOwner]
+    permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
     lookup_field = 'pk'
 
 
 class ProjectUpdateAPIView(UpdateAPIView):
-    permission_classes = [IsProjectOwner]
-
+    permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
     lookup_field = 'pk'
 
 
 class ProjectDeleteAPIView(DestroyAPIView):
-    permission_classes = [IsProjectOwner]
+    permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
 
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
+    lookup_field = 'pk'
+
+
+#  -------------- container --------------- #
+
+class ContainerAPIView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ContainerSerializer
+
+    def get_queryset(self):
+        acc = Account.objects.get(user=self.request.user)
+        projects = Project.objects.get(account=acc)
+        return Container.objects.filter(project=projects)
+
+
+class ContainerCreateAPIView(CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
+    serializer_class = ContainerSerializer
+    queryset = Container.objects.all()
+    print("SUKA")
+
+
+class ContainerDeleteAPIView(DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsContainerOwner]
+
+    serializer_class = ContainerSerializer
+    queryset = Container.objects.all()
     lookup_field = 'pk'

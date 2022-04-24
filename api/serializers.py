@@ -21,6 +21,13 @@ class ProjectSerializer(ModelSerializer):
         fields = "__all__"
 
 
+class ContainerSerializer(ModelSerializer):
+
+    class Meta:
+        model = Container
+        fields = "__all__"
+
+
 class ModelInferenceSerializer(ModelSerializer):
 
     class Meta:

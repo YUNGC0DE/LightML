@@ -9,7 +9,7 @@ class InputDataFormat(models.TextChoices):
 
 
 class PythonVersion(models.TextChoices):
-    Python36 = 'python 3.6'
+    Python36 = 'python_3.6'
     Python37 = 'python_3.7'
     Python38 = 'python_3.8'
     Python39 = 'python_3.9'
