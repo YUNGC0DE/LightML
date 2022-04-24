@@ -5,15 +5,6 @@ from .serializers import *
 
 
 def get_object_or_none(klass, *args, **kwargs):
-    """
-    Uses get() to return an object or None if the object does not exist.
-
-    klass may be a Model, Manager, or QuerySet object. All other passed
-    arguments and keyword arguments are used in the get() query.
-
-    Note: Like with get(), a MultipleObjectsReturned will be raised if
-    more than one object is found.
-    """
     queryset = _get_queryset(klass)
     try:
         return queryset.get(*args, **kwargs)
@@ -45,18 +36,6 @@ class IsNewAccount(permissions.BasePermission):
     def has_permission(self, request, view):
         user_id = request.user.id
         return get_object_or_none(Account, user=user_id) is None
-
-
-"""
-
-
-
-class IsOrderOwnerCatToOrder(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        return request.user == Order.objects.get(pk=request.data.get('order')).user
-
-"""
 
 
 #  -------------- account --------------- #
