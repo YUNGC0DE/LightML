@@ -1,6 +1,8 @@
+from django.db.models import signals
 from django.db import models
 from django.contrib.auth.models import User
 from api.choices import InputDataFormat, PythonVersion
+from containers.tasks import run
 
 
 class Account(models.Model):
@@ -27,6 +29,13 @@ class Project(models.Model):
 class Container(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=False)
     status = models.TextField(blank=True, default="starting", max_length=110)
+
+
+def run_container(sender, instance, signal, *args, **kwargs):
+    run.delay(instance.id)
+
+
+signals.post_save.connect(run_container, sender=Container)
 
 
 class ModelInference(models.Model):
