@@ -1,3 +1,5 @@
+import uuid
+
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import *
@@ -22,10 +24,11 @@ class ProjectSerializer(ModelSerializer):
 
 
 class ContainerSerializer(ModelSerializer):
+    container_name = serializers.HiddenField(default=uuid.uuid1())
 
     class Meta:
         model = Container
-        fields = "__all__"
+        fields = ['id', 'project', 'status', 'container_name']
 
 
 class ModelInferenceSerializer(ModelSerializer):
