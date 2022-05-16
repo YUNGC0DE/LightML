@@ -47,7 +47,9 @@ signals.pre_delete.connect(stop_container, sender=Container)
 
 
 class ModelInference(models.Model):
-    date = models.DateTimeField(auto_created=True)
+    date = models.DateTimeField(auto_created=True, auto_now=True)
     inference_time = models.FloatField(blank=True)
     is_successful = models.BooleanField(default=False, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    input_data = models.TextField(blank=False, default="")
+    output_data = models.TextField(blank=False, default="")

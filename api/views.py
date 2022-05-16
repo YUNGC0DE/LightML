@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 from django.shortcuts import _get_queryset
 from rest_framework.generics import *
@@ -22,7 +23,16 @@ class RequestView(View):
         for p in extra_path:
             url += f'/{p}'
         body = json.loads(request.body)
+        start = time.time()
         r = requests.post(url, json=body)
+        took_time = time.time() - start
+        project = Container.objects.get(container_name=app_uuid).project
+        inference = ModelInference(inference_time=took_time,
+                                   is_successful=True if r.status_code == 200 else False,
+                                   project=project,
+                                   input_data=str(body),
+                                   output_data=str(r.json()))
+        inference.save()
         return HttpResponse(r)
 
     def get(self, request, app_uuid, **kwargs):
@@ -181,3 +191,15 @@ class ContainerDeleteAPIView(DestroyAPIView):
     serializer_class = ContainerSerializer
     queryset = Container.objects.all()
     lookup_field = 'pk'
+
+
+# --------------------- Inference ------------------------
+
+class InferenceAPIView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ModelInferenceSerializer
+
+    def get_queryset(self):
+        acc = Account.objects.get(user=self.request.user)
+        projects = Project.objects.filter(account=acc)
+        return ModelInference.objects.filter(project__in=projects)

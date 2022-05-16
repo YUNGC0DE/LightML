@@ -7,6 +7,7 @@ urlpatterns = [
     path('account/', AccountAPIView.as_view()),
     path('account/create/', AccountCreateAPIView.as_view()),
     path('account/<int:pk>/update/', AccountUpdateAPIView.as_view()),
+    path('inference/', InferenceAPIView.as_view()),
     path('projects/', ProjectsAPIView.as_view()),
     path('projects/create/', ProjectCreateAPIView.as_view()),
     path('projects/<int:pk>/', ProjectAPIView.as_view()),
