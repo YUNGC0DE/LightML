@@ -21,8 +21,8 @@ class RequestView(View):
         extra_path = list(kwargs.values())
         for p in extra_path:
             url += f'/{p}'
-        body = dict(request.POST)
-        r = requests.post(url, data=body)
+        body = json.loads(request.body)
+        r = requests.post(url, json=body)
         return HttpResponse(r)
 
     def get(self, request, app_uuid, **kwargs):
@@ -158,8 +158,8 @@ class ContainerAPIView(ListAPIView):
 
     def get_queryset(self):
         acc = Account.objects.get(user=self.request.user)
-        projects = Project.objects.get(account=acc)
-        return Container.objects.filter(project=projects)
+        projects = Project.objects.filter(account=acc)
+        return Container.objects.filter(project__in=projects)
 
 
 class ContainerCreateAPIView(CreateAPIView):
