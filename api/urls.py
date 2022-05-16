@@ -16,4 +16,8 @@ urlpatterns = [
     path('containers/create/', ContainerCreateAPIView.as_view()),
     path('containers/<int:pk>/update/', ContainerUpdateAPIView.as_view()),
     path('containers/<int:pk>/delete/', ContainerDeleteAPIView.as_view()),
+    path('request/<app_uuid>/', RequestView.as_view()),
+    path('request/<app_uuid>/<first>', RequestView.as_view()),
+    path('request/<app_uuid>/<first>/<second>', RequestView.as_view()),
+    path('request/<app_uuid>/<first>/<second>/<third>', RequestView.as_view()),
 ]

@@ -24,7 +24,7 @@ class ProjectSerializer(ModelSerializer):
 
 
 class ContainerSerializer(ModelSerializer):
-    container_name = serializers.HiddenField(default=uuid.uuid1())
+    container_name = serializers.CharField(default=uuid.uuid1())
 
     class Meta:
         model = Container

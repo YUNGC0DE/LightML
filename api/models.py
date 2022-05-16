@@ -29,6 +29,7 @@ class Project(models.Model):
 class Container(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=False)
     status = models.TextField(blank=True, default="starting", max_length=110)
+    replicas = models.IntegerField(default=1)
     container_name = models.TextField(max_length=20)
 
 

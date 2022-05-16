@@ -1,7 +1,31 @@
+import requests
+import json
+
 from django.shortcuts import _get_queryset
 from rest_framework.generics import *
 from rest_framework import permissions
 from .serializers import *
+from django.views.generic import View
+from containers.kuber_api import get_request_url
+from django.http import HttpResponse
+
+
+class RequestView(View):
+    def post(self, request, app_uuid, **kwargs):
+        # handle the post request
+        print(app_uuid)
+        return {"status": app_uuid}
+
+    def get(self, request, app_uuid, **kwargs):
+        url = get_request_url(app_uuid)
+        if url is None:
+            return HttpResponse(json.dumps({"status": "Does not exist"}))
+        # handle the get request
+        extra_path = list(kwargs.values())
+        for p in extra_path:
+            url += f'/{p}'
+        r = requests.get(url)
+        return HttpResponse(r)
 
 
 def get_object_or_none(klass, *args, **kwargs):

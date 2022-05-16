@@ -1,15 +1,17 @@
-import os
 import time
 import requests
 
+from .kuber_api import create_app, delete_app
 
-def start_container(name, port):
-    os.system(f"docker run -i -t -d --rm --name {name} -p {port}:8080 python:3.8.13-bullseye bash")
-    os.system(f"docker exec -d {name} bash -c 'git clone https://github.com/YUNGC0DE/testSHit.git; cd testSHit; pip install -r requirements.txt; python main.py'")
+
+def start_container(uuid: str, github_link: str, target_file: str = "main.py", replicas: int = 1):
+    container_address = create_app(uuid, github_link, target_file, replicas=replicas)
+    if container_address is None:
+        raise
     for i in range(200):
         time.sleep(1)
         try:
-            if requests.get(f"http://localhost:{port}/hello/kek").status_code == 200:
+            if requests.get(f"{container_address}/hello/kek").status_code == 200:
                 return True
             else:
                 return False
@@ -19,9 +21,5 @@ def start_container(name, port):
     return False
 
 
-def stop_container(name):
-    os.system(f"docker stop {name}")
-
-
-def get_free_port():
-    pass
+def stop_container(uuid: str):
+    delete_app(uuid)
