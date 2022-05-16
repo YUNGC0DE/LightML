@@ -9,7 +9,8 @@ def run(container_id):
     container = container.objects.get(id=container_id)
     github_link = container.project.repository_link
     container_name = container.container_name
-    is_started = start_container(container_name, github_link=github_link)
+    replicas = int(container.replicas)
+    is_started = start_container(container_name, github_link=github_link, replicas=replicas)
     container_update = apps.get_model('api.Container').objects.filter(id=container_id)
     if is_started:
         container_update.update(status='started')

@@ -11,7 +11,7 @@ def start_container(uuid: str, github_link: str, target_file: str = "main.py", r
     for i in range(200):
         time.sleep(1)
         try:
-            if requests.get(f"{container_address}/hello/kek").status_code == 200:
+            if requests.get(f"{container_address}").status_code:
                 return True
             else:
                 return False
