@@ -28,7 +28,7 @@ class ContainerSerializer(ModelSerializer):
 
     class Meta:
         model = Container
-        fields = ['id', 'project', 'status', 'container_name']
+        fields = "__all__"
 
 
 class ModelInferenceSerializer(ModelSerializer):
