@@ -8,19 +8,27 @@ from .serializers import *
 from django.views.generic import View
 from containers.kuber_api import get_request_url
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class RequestView(View):
     def post(self, request, app_uuid, **kwargs):
-        # handle the post request
-        print(app_uuid)
-        return {"status": app_uuid}
+        url = get_request_url(app_uuid)
+        if url is None:
+            return HttpResponse(json.dumps({"status": "Does not exist"}))
+        extra_path = list(kwargs.values())
+        for p in extra_path:
+            url += f'/{p}'
+        body = dict(request.POST)
+        r = requests.post(url, data=body)
+        return HttpResponse(r)
 
     def get(self, request, app_uuid, **kwargs):
         url = get_request_url(app_uuid)
         if url is None:
             return HttpResponse(json.dumps({"status": "Does not exist"}))
-        # handle the get request
         extra_path = list(kwargs.values())
         for p in extra_path:
             url += f'/{p}'
